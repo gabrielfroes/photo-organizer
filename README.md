@@ -35,6 +35,21 @@ pip install pyinstaller
 
 ## Running the tests
 
+### Linux, Mac OS X, BSD and most OSes except Windows
+Turn script executable:
+
+```
+chmod +x photo-organizer.py
+```
+
+Call script inside a folder with photos:
+
+```
+./photo-organizer.py .
+```
+
+### Windows
+
 To run a test, call the script inside a folder with photos.
 
 ```
