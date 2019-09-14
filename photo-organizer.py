@@ -6,7 +6,7 @@ from PIL import Image
 
 
 class PhotoOrganizer:
-    extensions = ['jpg', 'jpeg', 'JPG', 'JPEG']
+    extensions = ['jpg', 'jpeg', 'png']
 
     def folder_path_from_photo_date(self, file):
         date = self.photo_shooting_date(file)
@@ -30,7 +30,8 @@ class PhotoOrganizer:
 
     def organize(self):
         photos = [
-            filename for filename in os.listdir('.') if any(filename.endswith(ext) for ext in self.extensions)
+            filename for filename in os.listdir('.')
+                if os.path.isfile(filename) and any(filename.lower().endswith('.' + ext.lower()) for ext in self.extensions)
         ]
         for filename in photos:
             self.move_photo(filename)
