@@ -6,20 +6,24 @@ from PIL import Image
 
 
 class PhotoOrganizer:
-    extensions = ['jpg', 'jpeg', 'JPG', 'JPEG']
+    DATETIME_EXIF_INFO_ID = 36867
+    extensions = ['jpg', 'jpeg', 'png']
 
     def folder_path_from_photo_date(self, file):
         date = self.photo_shooting_date(file)
         return date.strftime('%Y') + '/' + date.strftime('%Y-%m-%d')
 
     def photo_shooting_date(self, file):
+        date = None
         photo = Image.open(file)
-        info = photo._getexif()
-        date = datetime.fromtimestamp(os.path.getmtime(file))
-        if info:
-            if 36867 in info:
-                date = info[36867]
-                date = datetime.strptime(date, '%Y:%m:%d %H:%M:%S')
+        if hasattr(photo, '_getexif'):
+            info = photo._getexif()
+            if info:
+                if self.DATETIME_EXIF_INFO_ID in info:
+                    date = info[self.DATETIME_EXIF_INFO_ID]
+                    date = datetime.strptime(date, '%Y:%m:%d %H:%M:%S')
+        if date is None:
+            date = datetime.fromtimestamp(os.path.getmtime(file))
         return date
 
     def move_photo(self, file):
@@ -30,7 +34,8 @@ class PhotoOrganizer:
 
     def organize(self):
         photos = [
-            filename for filename in os.listdir('.') if any(filename.endswith(ext) for ext in self.extensions)
+            filename for filename in os.listdir('.')
+                if os.path.isfile(filename) and any(filename.lower().endswith('.' + ext.lower()) for ext in self.extensions)
         ]
         for filename in photos:
             self.move_photo(filename)
